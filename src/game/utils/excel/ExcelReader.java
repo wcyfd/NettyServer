@@ -20,19 +20,32 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelReader {
-	private static String EVALUATION_CACHE_PACKAGE_NAME = null;
-	private static String EVALUATION_MAPPING_PACKAGE_NAME = null;
-	private static String DIRECTORY_NAME = null;
+	private String evaluationCachePackageName = null;
+	private String evaluationMappingPackageName = null;
+	private String directoryName = null;
+	
+	public ExcelReader() {
+	}
+	
+	public ExcelReader setDirectory(String directoryName){
+		this.directoryName = directoryName;
+		return this;
+	}
+	
+	public ExcelReader setCachePackageName(String cachePackName){
+		this.evaluationCachePackageName = cachePackName.concat(".");
+		return this;
+	}
+	
+	public ExcelReader setMappingPackageName(String mapPackName){
+		this.evaluationMappingPackageName = mapPackName.concat(".");
+		return this;
+	}
 
-	public static void readExcel2Cache(String directoryName, String evaluationCachePackageName,
-			String evaluationMappingPackageName) {
-		ExcelReader.EVALUATION_CACHE_PACKAGE_NAME = evaluationCachePackageName.concat(".");
-		ExcelReader.EVALUATION_MAPPING_PACKAGE_NAME = evaluationMappingPackageName.concat(".");
-		ExcelReader.DIRECTORY_NAME = directoryName;
-
+	public void readExcel2Cache() {
 		File[] files = null;
 		File tempfile = new File(System.getProperty("user.dir") + System.getProperty("file.separator")
-				+ ExcelReader.DIRECTORY_NAME);
+				+ this.directoryName);
 		if (tempfile.isDirectory()) {
 			files = tempfile.listFiles(new FilenameFilter() {
 				public boolean accept(File dir, String name) {
@@ -71,7 +84,7 @@ public class ExcelReader {
 		}
 	}
 
-	private static void loadEachFile(File file) throws FileNotFoundException, IOException, SecurityException,
+	private void loadEachFile(File file) throws FileNotFoundException, IOException, SecurityException,
 			IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException,
 			IllegalAccessException, InvocationTargetException {
 		FileInputStream fis = new FileInputStream(file);
@@ -116,13 +129,13 @@ public class ExcelReader {
 		}
 	}
 
-	private static void setValue(String clazzName, List<String> setOrderList, List<Object> valueList)
+	private void setValue(String clazzName, List<String> setOrderList, List<Object> valueList)
 			throws SecurityException, ClassNotFoundException, NoSuchMethodException, IllegalArgumentException,
 			InstantiationException, IllegalAccessException, InvocationTargetException {
 		String upClazzName = upFirstChar(clazzName);
 		Class clazz = null;
 		try {
-			clazz = Class.forName(ExcelReader.EVALUATION_MAPPING_PACKAGE_NAME.concat(upClazzName));
+			clazz = Class.forName(this.evaluationMappingPackageName.concat(upClazzName));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			return;
@@ -181,22 +194,22 @@ public class ExcelReader {
 		putCache(upClazzName, clazz, newInstance);
 	}
 
-	private static void putCache(String upClazzName, Class<?> paramClazz, Object param) throws ClassNotFoundException,
+	private void putCache(String upClazzName, Class<?> paramClazz, Object param) throws ClassNotFoundException,
 			SecurityException, NoSuchMethodException, IllegalArgumentException, InstantiationException,
 			IllegalAccessException, InvocationTargetException {
-		Class clazz = Class.forName(ExcelReader.EVALUATION_CACHE_PACKAGE_NAME.concat(upClazzName.concat("Cache")));
+		Class clazz = Class.forName(this.evaluationCachePackageName.concat(upClazzName.concat("Cache")));
 		Constructor constructor = clazz.getConstructor(new Class[0]);
 		Object newInstance = constructor.newInstance(new Object[0]);
 		Method method = clazz.getMethod("put".concat(upClazzName), new Class[] { paramClazz });
 		method.invoke(newInstance, new Object[] { param });
 	}
 
-	private static String concatSetMethod(String str) {
+	private String concatSetMethod(String str) {
 		String setMethod = "set";
 		return setMethod.concat(upFirstChar(str));
 	}
 
-	private static String upFirstChar(String str) {
+	private String upFirstChar(String str) {
 		return str.substring(0, 1).toUpperCase().concat(str.substring(1, str.length()));
 	}
 }

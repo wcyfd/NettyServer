@@ -8,19 +8,20 @@ import game.net.ServerFramework;
 import game.utils.excel.ExcelReader;
 import game.utils.spring.SpringContext;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 public class GameStartServer {
 
 	public static void main(String[] args) {
 
 		SpringContext.initSpringCtx("ApplicationContext.xml");
 
-		ExcelReader.readExcel2Cache("excelFile", "game.cache.file", "game.entity.file");
+		ExcelReader reader = new ExcelReader();
+		reader.setDirectory("excelFile").setCachePackageName("game.cache.file")
+				.setMappingPackageName("game.entity.file").readExcel2Cache();
 
+		for (TestConfig config :TestConfigCache.getMap().values()){
+			System.out.println(config);
+		}
 		
-
 		GameStartServer server = new GameStartServer();
 		server.init();
 
