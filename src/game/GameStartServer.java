@@ -1,7 +1,5 @@
 package game;
 
-import game.cache.file.TestConfigCache;
-import game.entity.file.TestConfig;
 import game.module.employee.service.EmployeeService;
 import game.module.role.service.RoleService;
 import game.net.ServerFramework;
@@ -18,9 +16,6 @@ public class GameStartServer {
 		reader.setDirectory("excelFile").setCachePackageName("game.cache.file")
 				.setMappingPackageName("game.entity.file").readExcel2Cache();
 
-		for (TestConfig config :TestConfigCache.getMap().values()){
-			System.out.println(config);
-		}
 		
 		GameStartServer server = new GameStartServer();
 		server.init();
