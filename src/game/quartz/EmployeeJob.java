@@ -1,4 +1,4 @@
-package quartz;
+package game.quartz;
 
 import game.module.employee.service.EmployeeService;
 import game.utils.Utils;

@@ -1,4 +1,4 @@
-package quartz;
+package game.quartz;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
