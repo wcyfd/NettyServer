@@ -22,6 +22,7 @@ public class RegisterRegisterRoleAction extends AbstractAction{
 			return null;
 		}
 
+		handler.writeAndFlush(message.getData());
 		return message;
 	}
 

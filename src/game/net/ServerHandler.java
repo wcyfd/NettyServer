@@ -29,7 +29,7 @@ public class ServerHandler extends ChannelHandlerAdapter {
 			message.putFloat(10.33f);
 		}
 
-		ctx.writeAndFlush(message.getByteBuf());
+		ctx.writeAndFlush(message.getData());
 
 	}
 
@@ -45,7 +45,7 @@ public class ServerHandler extends ChannelHandlerAdapter {
 
 		System.out.println("server read");
 		NettyMessage message = Message.create();
-		message.setByteBuf(buf);
+		message.setData(buf);
 
 		int protocalNum = message.getInt();
 		try {
@@ -55,9 +55,8 @@ public class ServerHandler extends ChannelHandlerAdapter {
 				throw new NullPointerException("没有该协议");
 
 			message = action.execute(message, ctx);
-			ctx.writeAndFlush(message);
-			
-			Role role = ContextCache.getRoleByContext(ctx);			
+				
+			Role role = ContextCache.getRoleByContext(ctx);	
 			PrintMessage.printMessage(role, message);
 
 		} catch (Exception e) {

@@ -9,8 +9,8 @@ import io.netty.buffer.Unpooled;
 
 public class BaseCustomTypeLengthMessage implements NettyMessage {
 
-	private ByteBuf buf = null;
-	private int pos = 0;
+	private ByteBuf bodyBuf = null;
+	private ByteBuf headBuf = null;
 	private static final Charset charset = Charset.forName("UTF-8");
 	private List<Byte> seq = new LinkedList<>();
 
@@ -23,7 +23,14 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 	private final static int len_long = 8;
 
 	public BaseCustomTypeLengthMessage() {
-		this.buf = Unpooled.buffer();
+		this.bodyBuf = Unpooled.buffer();
+		this.headBuf = Unpooled.buffer();		
+		
+		//设置回复点
+		this.bodyBuf.clear();
+		this.bodyBuf.markReaderIndex();
+		
+		this.seq.clear();
 	}
 
 	@Override
@@ -217,12 +224,6 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 		return str;
 	}
 
-	@Override
-	public ByteBuf getByteBuf() {
-
-		return this.buf;
-	}
-
 	private void writeBytes(byte[] src, int len) {
 		for (int i = 0; i < len; i++) {
 			writeByte(src[i]);
@@ -230,8 +231,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 	}
 
 	private void writeByte(byte value) {
-		buf.writeByte(value);
-		this.pos += 1;
+		bodyBuf.writeByte(value);
 	}
 
 	private byte[] getByteFromBuf(int len) {
@@ -243,8 +243,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 	}
 
 	private byte getByteFromBuf() {
-		byte b = buf.getByte(this.pos);
-		this.pos += 1;
+		byte b = bodyBuf.readByte();
 		return b;
 	}
 
@@ -260,19 +259,71 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 	}
 
 	@Override
-	public void setByteBuf(ByteBuf buf) {
-		this.buf = buf;
-	}
-
-	@Override
 	public List<Byte> getSeq() {
-
 		return this.seq;
 	}
 
 	@Override
-	public void resetPosition() {
-		this.pos = 0;
+	public void resetReaderIndex() {
+		this.bodyBuf.resetReaderIndex();
+	}
+
+	@Override
+	public void setData(ByteBuf buf) {
+		buf.getBytes(0, this.headBuf, len_int);
+		this.setBody(buf);
+	}
+
+	@Override
+	public ByteBuf getData() {
+		ByteBuf msg = Unpooled.buffer();
+		msg.writeBytes(this.headBuf);
+		msg.writeBytes(this.bodyBuf);
+
+		return msg;
+	}
+
+	@Override
+	public void setType(int type) {
+		this.headBuf.clear();
+
+		byte[] src = new byte[len_int];
+
+		src[3] = (byte) (type & 0xff);
+		src[2] = (byte) ((type >> 8) & 0xff);
+		src[1] = (byte) ((type >> 16) & 0xff);
+		src[0] = (byte) ((type >> 24) & 0xff);
+
+		this.headBuf.writeBytes(src);
+	}
+
+	@Override
+	public int getType() {
+		byte[] destB = new byte[len_int];
+		this.headBuf.getBytes(0, destB);
+
+		int dest = 0;
+		for (int i = 0; i < len_int; i++) {
+			int tempInt = this.getBinaryByteFromByte(destB[i]);
+			dest = (dest << 8) | tempInt;
+		}
+
+		return dest;
+	}
+
+	@Override
+	public void setBody(ByteBuf buf) {
+		this.bodyBuf.clear();
+		this.bodyBuf.markReaderIndex();
+		
+		this.seq.clear();
+		
+		buf.getBytes(len_int, this.bodyBuf);
+	}
+
+	@Override
+	public ByteBuf getBody() {
+		return this.bodyBuf;
 	}
 
 }
