@@ -46,20 +46,20 @@ public class ServerHandler extends ChannelHandlerAdapter {
 		System.out.println("server read");
 	
 		
-		NettyMessage message = Message.create();
-		message.setData(buf);
+		NettyMessage receiveMessage = Message.create();
+		receiveMessage.setData(buf);
 
-		int protocalNum = message.getType();
+		int protocalNum = receiveMessage.getType();
 		try {
 			AbstractAction action = Nav.getAction(protocalNum);
 
 			if (action == null)
 				throw new NullPointerException("没有该协议");
 
-			message = action.execute(message, ctx);
+			NettyMessage writebackMessage = action.execute(receiveMessage, ctx);
 				
 			Role role = ContextCache.getRoleByContext(ctx);	
-			PrintMessage.printMessage(role, message);
+			PrintMessage.printMessage(role, writebackMessage);
 
 		} catch (Exception e) {
 			System.err.println("接受协议出错");
