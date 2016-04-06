@@ -314,11 +314,10 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 	@Override
 	public void setBody(ByteBuf buf) {
 		this.bodyBuf.clear();
-		this.bodyBuf.markReaderIndex();
+		buf.skipBytes(len_int);
+		this.bodyBuf = buf.copy();
 		
 		this.seq.clear();
-		
-		buf.getBytes(len_int, this.bodyBuf);
 	}
 
 	@Override

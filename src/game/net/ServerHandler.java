@@ -44,10 +44,12 @@ public class ServerHandler extends ChannelHandlerAdapter {
 		ByteBuf buf = (ByteBuf) msg;
 
 		System.out.println("server read");
+	
+		
 		NettyMessage message = Message.create();
 		message.setData(buf);
 
-		int protocalNum = message.getInt();
+		int protocalNum = message.getType();
 		try {
 			AbstractAction action = Nav.getAction(protocalNum);
 
