@@ -3,6 +3,7 @@ package game.module.register.action;
 import game.module.register.service.RegisterService;
 import game.nav.AbstractAction;
 import game.net.message.NettyMessage;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 public class RegisterRegisterRoleAction extends AbstractAction{
@@ -20,6 +21,7 @@ public class RegisterRegisterRoleAction extends AbstractAction{
 		if(message == null){
 			return null;
 		}
+
 		return message;
 	}
 

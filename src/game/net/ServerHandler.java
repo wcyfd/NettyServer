@@ -1,6 +1,7 @@
 package game.net;
 
 import game.cache.local.ContextCache;
+import game.entity.bo.Role;
 import game.nav.AbstractAction;
 import game.nav.Nav;
 import game.net.message.Message;
@@ -48,15 +49,17 @@ public class ServerHandler extends ChannelHandlerAdapter {
 
 		int protocalNum = message.getInt();
 		try {
-			AbstractAction action = Nav.navMap().get(protocalNum);
+			AbstractAction action = Nav.getAction(protocalNum);
 
 			if (action == null)
 				throw new NullPointerException("没有该协议");
 
 			message = action.execute(message, ctx);
-			ctx.writeAndFlush(message.getByteBuf());
+			ctx.writeAndFlush(message);
+			
+			Role role = ContextCache.getRoleByContext(ctx);			
+			PrintMessage.printMessage(role, message);
 
-			PrintMessage.printMessage(message);
 		} catch (Exception e) {
 			System.err.println("接受协议出错");
 		}
@@ -87,5 +90,7 @@ public class ServerHandler extends ChannelHandlerAdapter {
 		System.out.println("exceptionCaught");
 		ctx.close();
 	}
+	
+	
 
 }

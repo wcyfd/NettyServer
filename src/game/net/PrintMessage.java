@@ -1,14 +1,26 @@
 package game.net;
 
-import java.util.List;
-
+import game.entity.bo.Role;
 import game.net.message.NettyMessage;
 
+import java.util.List;
+
 public class PrintMessage {
-	public static void printMessage(NettyMessage message){
+	public static void printMessage(Role role,NettyMessage message){
+		if(role == null){
+			System.out.println("role is null");
+		}
+		
+		Integer roleId = role.getId();
 		message.resetPosition();
 		List<Byte> seq = message.getSeq();
-		for (Byte b : seq) {
+		
+		int protocal = message.getInt();
+		System.out.println("write back " + roleId + " protocal: " + protocal);
+		
+		for (int i = 1;i<seq.size();i++) {
+			Byte b = seq.get(i);
+			System.out.print("output--"+roleId+"--");
 			switch (b) {
 			case NettyMessage._byte:
 				System.out.println("Byte:" + message.getByte());
