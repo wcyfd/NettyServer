@@ -49,17 +49,12 @@ public interface NettyMessage {
 
 	ByteBuf getBody();
 
-	List<Byte> getSeq();
+	List<BaseDataType> getSeq();
 
 	void resetReaderIndex();
 
-	final static byte _byte = 1;
-	final static byte _boolean = 2;
-	final static byte _short = 3;
-	final static byte _int = 4;
-	final static byte _float = 5;
-	final static byte _double = 6;
-	final static byte _long = 7;
-	final static byte _string = 8;
+	enum BaseDataType {
+		_byte, _boolean, _short, _int, _float, _double, _long, _string
+	}
 
 }

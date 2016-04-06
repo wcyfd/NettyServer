@@ -12,7 +12,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 	private ByteBuf bodyBuf = null;
 	private ByteBuf headBuf = null;
 	private static final Charset charset = Charset.forName("UTF-8");
-	private List<Byte> seq = new LinkedList<>();
+	private List<BaseDataType> seq = new LinkedList<>();
 
 	private final static int len_byte = 1;
 	private final static int len_boolean = 1;
@@ -37,7 +37,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 	public void putBoolean(boolean value) {
 
 		this.writeByte((byte) (value ? 1 : 0));
-		seq.add(_boolean);
+		seq.add(BaseDataType._boolean);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 		src[0] = (byte) ((value >> 24) & 0xff);
 
 		this.writeBytes(src, len_int);
-		seq.add(_int);
+		seq.add(BaseDataType._int);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 		src[0] = (byte) ((temp >> 24) & 0xff);
 
 		this.writeBytes(src, len_float);
-		seq.add(_float);
+		seq.add(BaseDataType._float);
 	}
 
 	@Override
@@ -84,14 +84,14 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 		src[0] = (byte) ((temp >> 56) & 0xff);
 
 		this.writeBytes(src, len_double);
-		seq.add(_double);
+		seq.add(BaseDataType._double);
 	}
 
 	@Override
 	public void putByte(byte value) {
 
 		this.writeByte(value);
-		seq.add(_byte);
+		seq.add(BaseDataType._byte);
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 		src[0] = (byte) ((value >> 56) & 0xff);
 
 		this.writeBytes(src, len_long);
-		seq.add(_long);
+		seq.add(BaseDataType._long);
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 		src[0] = (byte) ((value >> 8) & 0xff);
 
 		this.writeBytes(src, len_short);
-		seq.add(_short);
+		seq.add(BaseDataType._short);
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 		this.putInt(len);
 		byte[] src = value.getBytes();
 		this.writeBytes(src, len);
-		seq.add(_string);
+		seq.add(BaseDataType._string);
 	}
 
 	@Override
@@ -259,7 +259,7 @@ public class BaseCustomTypeLengthMessage implements NettyMessage {
 	}
 
 	@Override
-	public List<Byte> getSeq() {
+	public List<BaseDataType> getSeq() {
 		return this.seq;
 	}
 

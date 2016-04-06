@@ -2,6 +2,7 @@ package game.net;
 
 import game.entity.bo.Role;
 import game.net.message.NettyMessage;
+import game.net.message.NettyMessage.BaseDataType;
 
 import java.util.List;
 
@@ -16,37 +17,41 @@ public class PrintMessage {
 		} else {
 			Integer roleId = role.getId();
 			message.resetReaderIndex();
-			List<Byte> seq = message.getSeq();
+			List<BaseDataType> seq = message.getSeq();
 
 			System.out.println("write back " + roleId + " protocal: " + protocal);
 
 			for (int i = 1; i < seq.size(); i++) {
-				Byte b = seq.get(i);
+				BaseDataType b = seq.get(i);
 				System.out.print("output--" + roleId + "--");
+				
 				switch (b) {
-				case NettyMessage._byte:
+				case _byte:
 					System.out.println("Byte:" + message.getByte());
 					break;
-				case NettyMessage._boolean:
+				case _boolean:
 					System.out.println("Boolean:" + message.getBoolean());
 					break;
-				case NettyMessage._short:
+				case _short:
 					System.out.println("Short" + message.getShort());
 					break;
-				case NettyMessage._int:
+				case _int:
 					System.out.println("Int" + message.getInt());
 					break;
-				case NettyMessage._float:
+				case _float:
 					System.out.println("Float" + message.getFloat());
 					break;
-				case NettyMessage._double:
+				case _double:
 					System.out.println("Double" + message.getDouble());
 					break;
-				case NettyMessage._long:
+				case _long:
 					System.out.println("Long" + message.getLong());
 					break;
-				case NettyMessage._string:
+				case _string:
 					System.out.println("String" + message.getString());
+					break;
+
+				default:
 					break;
 				}
 			}
